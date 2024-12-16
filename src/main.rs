@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::path::PathBuf;
-use std::{error::Error, io, process};
+use std::{error::Error, process};
 
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
@@ -10,6 +10,10 @@ use indicatif::{ProgressBar, ProgressStyle};
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
+    /// Input CSV
+    #[arg(long, short)]
+    input: PathBuf,
+    /// Output SBF
     #[arg(long, short)]
     output: PathBuf,
 }
@@ -24,10 +28,10 @@ struct Point {
 }
 
 /// Convert stdin (CSV) to output (SB)
-fn convert(meta: &PathBuf, data: &PathBuf) -> Result<(), Box<dyn Error>> {
+fn convert(input: &PathBuf, meta: &PathBuf, data: &PathBuf) -> Result<(), Box<dyn Error>> {
     let mut reader = csv::ReaderBuilder::new()
         .has_headers(false)
-        .from_reader(io::stdin());
+        .from_path(input)?;
 
     println!(
         "Writing to {:?} (text metadata) and {:?} (binary data).",
@@ -113,7 +117,7 @@ fn main() {
     let data_output = cli.output.with_extension("sbf.data");
 
     // Execute
-    if let Err(err) = convert(&cli.output, &data_output) {
+    if let Err(err) = convert(&cli.input, &cli.output, &data_output) {
         println!("error running example: {}", err);
         process::exit(1);
     }
