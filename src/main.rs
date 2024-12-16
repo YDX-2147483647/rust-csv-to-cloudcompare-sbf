@@ -71,6 +71,10 @@ fn convert(input: &PathBuf, meta: &PathBuf, data: &PathBuf) -> Result<(), Box<dy
         ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] {msg}").unwrap(),
     );
     for point in reader.deserialize() {
+        if n_point % 1000 == 0 {
+            bar.set_message(format!("Wrote {n_point} points"));
+        }
+
         let point: Point = point?;
 
         data.write_all(&point.x.to_be_bytes())?;
@@ -80,8 +84,8 @@ fn convert(input: &PathBuf, meta: &PathBuf, data: &PathBuf) -> Result<(), Box<dy
         data.write_all(&point.imag.to_be_bytes())?;
 
         n_point += 1;
-        bar.set_message(format!("Finish {n_point} points"));
     }
+    bar.set_message(format!("Wrote {n_point} points"));
     bar.finish();
 
     // 3. Finish data header
