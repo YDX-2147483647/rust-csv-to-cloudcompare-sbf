@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use std::{error::Error, io, process};
 
 use clap::Parser;
+use indicatif::{ProgressBar, ProgressStyle};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -61,6 +62,10 @@ fn convert(meta: &PathBuf, data: &PathBuf) -> Result<(), Box<dyn Error>> {
     // 2. Write data body
 
     let mut n_point: u64 = 0;
+    let bar = ProgressBar::new_spinner();
+    bar.set_style(
+        ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] {msg}").unwrap(),
+    );
     for point in reader.deserialize() {
         let point: Point = point?;
 
@@ -71,7 +76,9 @@ fn convert(meta: &PathBuf, data: &PathBuf) -> Result<(), Box<dyn Error>> {
         data.write_all(&point.imag.to_be_bytes())?;
 
         n_point += 1;
+        bar.set_message(format!("Finish {n_point} points"));
     }
+    bar.finish();
 
     // 3. Finish data header
 
