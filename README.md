@@ -4,7 +4,8 @@ Convert a point cloud from CSV to [SBF (simple binary file)][sbf] format.
 
 ```shell
 $ cat ./data/example.csv | cargo r -- -o ./out/example.sbf
-Write to "./out/example.sbf" (text metadata) and "./out/example.sbf.data" (binary data).
+Writing to "./out/example.sbf" (text metadata) and "./out/example.sbf.data" (binary data).
+Successfully read and convert 10 points.
 ```
 
 ## Data format
