@@ -1,5 +1,6 @@
 [package]
 name = "sbf"
+description = "Convert a point cloud from CSV to SBF (simple binary file) format."
 version = "0.1.0"
 edition = "2021"
 
